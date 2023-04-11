@@ -6,7 +6,7 @@
 /*   By: rapelcha <rapelcha@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 10:38:32 by rapelcha          #+#    #+#             */
-/*   Updated: 2023/04/10 13:25:19 by rapelcha         ###   ########.fr       */
+/*   Updated: 2023/04/11 14:51:06 by rapelcha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,61 +19,68 @@ static void	initialization(int *size_bin, int *c, int *pid)
 	*pid = 0;
 }
 
+static void	*return_struc(void *ptr)
+{
+	static void	*data = NULL;
+
+	if (ptr)
+		data = ptr;
+	return (data);
+}
+
 static char	*char_join(char *str, char c)
 {
-	int	i;
+	int		i;
+	char	*res;
 
 	i = 0;
 	if (!str)
 	{
-		str = malloc (1 * sizeof(char));
+		str = ft_calloc(1, sizeof(char));
 		*str = c;
 		return (str);
 	}
-	while (str[i])
+	res = ft_strdup(str);
+	while (res[i])
 		i++;
-	i++;
-	str = malloc((ft_strlen(str) + 1) * sizeof(char));
-	str[i] = c;
-	return (str);
+	res[i] = c;
+	return (res);
 }
 
 static void	received(int signal, siginfo_t *received, void *context)
 {
-	static int	temp;
-	static int	size_bin;
-	static int	pid;
-	static char	*message;
+	static int		temp;
+	static int		size_bin;
+	static int		pid;
+	t_serv_variable	*vari;
 
 	(void)context;
+	vari = return_struc(NULL);
 	if (received->si_pid != pid)
 		initialization(&size_bin, &temp, &pid);
 	if (pid == 0)
 		pid = received->si_pid;
-	if (size_bin < BITE_SIZE)
+	if (signal == SIGUSR1)
+		temp |= (1 << size_bin);
+	size_bin++;
+	if (temp == '\0')
+		printf("Message: %s\n", vari->message);
+	if (size_bin == BITE_SIZE)
 	{
-		if (signal == SIGUSR1)
-		{
-			temp |= (1 << size_bin);
-		}
-		size_bin++;
-	}
-	else
-	{
-		printf("Char received\n");
-		message = char_join(message, temp);
+		vari->message = char_join(vari->message, temp);
 		temp = 0;
 		size_bin = 0;
 	}
-	printf("Message: %s\n", message);
 }
 
 int	main(void)
 {
-	struct sigaction	rcv;
-	pid_t				pid;
+	struct sigaction		rcv;
+	static t_serv_variable	varia;
+	pid_t					pid;
 
-	pid = getpid();
+	return_struc(&varia);
+	varia.pid = getpid();
 	printf("%d\n", pid);
 	rcv.sa_flags = SA_SIGINFO;
 	rcv.sa_sigaction = received;
