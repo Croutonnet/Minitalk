@@ -6,7 +6,7 @@
 /*   By: rapelcha <rapelcha@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 10:38:44 by rapelcha          #+#    #+#             */
-/*   Updated: 2023/04/11 13:15:38 by rapelcha         ###   ########.fr       */
+/*   Updated: 2023/04/13 14:19:19 by rapelcha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,9 @@ typedef struct s_client_variable
 {
 	char	*message;
 	int		pid;
+	int		index;
+	int		len;
+	int		size_bin;
 }			t_client_variable;
 
 typedef struct s_serv_variable

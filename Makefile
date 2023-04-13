@@ -32,4 +32,6 @@ fclean:	clean
 libft:
 		@$(MAKE) -C $(LIBDIR)
 
+re:	fclean all
+
 .PHONY: all libft
