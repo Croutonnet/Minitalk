@@ -6,7 +6,7 @@
 /*   By: rapelcha <rapelcha@student.42quebec.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/03/30 10:38:32 by rapelcha          #+#    #+#             */
-/*   Updated: 2023/04/13 15:18:19 by rapelcha         ###   ########.fr       */
+/*   Updated: 2023/04/14 12:11:53 by rapelcha         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static void	received(int signal, siginfo_t *received, void *context)
 	static int		size_bin;
 
 	(void)context;
-	if (received->si_pid != struc()->client_pid)
+	if (received->si_pid != struc()->client_pid && received->si_pid != 0)
 		initialization(&size_bin, &temp, &struc()->client_pid);
 	if (struc()->client_pid == 0)
 		struc()->client_pid = received->si_pid;
@@ -64,7 +64,7 @@ static void	received(int signal, siginfo_t *received, void *context)
 		if (temp == '\0')
 		{
 			ft_putendl_fd(struc()->message, 1);
-			ft_xfree(struc()->message);
+			struc()->message = ft_xfree(struc()->message);
 			kill(struc()->client_pid, SIGUSR2);
 		}
 		else
@@ -80,7 +80,8 @@ int	main(void)
 	struct sigaction		rcv;
 
 	struc()->pid = getpid();
-	printf("%d\n", struc()->pid);
+	ft_putnbr_fd(struc()->pid, 1);
+	ft_putchar_fd('\n', 1);
 	rcv.sa_flags = SA_SIGINFO;
 	rcv.sa_sigaction = received;
 	sigaction(SIGUSR1, &rcv, NULL);

@@ -7,19 +7,29 @@ OBSERV = $(SFILE:.c=.o)
 CFILE = client.c
 OBCLIENT = $(CFILE:.c=.o)
 
-LIBFT = libft.a
-LIBDIR = Libft/
+SRCS =	ft_atoi.c\
+		ft_bzero.c\
+		ft_putchar_fd.c\
+		ft_putendl_fd.c\
+		ft_putnbr_fd.c\
+		ft_putstr_fd.c\
+		ft_strlen.c\
+		ft_xfree.c\
+		ft_calloc.c
 
+OSRCS = $(SRCS:.c=.o)
 
-all: libft clex servex
+all: clex servex
 
-clex:	$(OBCLIENT)
-		@echo Compiling client...
-		@$(CC) $(OBCLIENT) $(LIBDIR)$(LIBFT) -o $(CLIENT)
+clex: $(OBCLIENT) $(OSRCS) $(CLIENT)
 
-servex: $(OBSERV)
-		@echo Compiling server...
-		@$(CC) $(OBSERV) $(LIBDIR)$(LIBFT) -o $(SERV)
+$(CLIENT): $(OSRCS)
+		$(CC) $(CFILE) $(SRCS) -o $(CLIENT)
+
+servex: $(OBSERV) $(OSRCS) $(SERV)
+
+$(SERV): $(OSRCS)
+		$(CC) $(SFILE) $(SRCS) -o $(SERV)
 
 clean :
 		@echo Cleaning...
@@ -27,10 +37,6 @@ clean :
 
 fclean:	clean
 		@rm -f $(SERV) $(CLIENT)
-		@rm -f $(LIBDIR)$(LIBFT)
-
-libft:
-		@$(MAKE) -C $(LIBDIR)
 
 re:	fclean all
 
